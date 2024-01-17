@@ -10,7 +10,6 @@ with open("NewBritainData.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
 
 # WEB AUTOMATION
-    #Clean run with python3 app.py | column -t -s ,
 
 #LOGIN PAGE
     for line in csv_reader:
