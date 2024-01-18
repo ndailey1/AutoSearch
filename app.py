@@ -68,6 +68,7 @@ with open("NewBritainVolPage.csv", "r") as csv_file:
         search_button.click()
 
         time.sleep(5)
+        
 # FIND RELEASE, RECORD VOL./PG., ADD IMAGE TO CART
     # Pull HTML of table
         # Definine if there is a release (conditions: Kind="Release" and REF="line[0],line[1])
