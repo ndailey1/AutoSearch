@@ -14,16 +14,8 @@ if response.status_code == 200:
     soup = BeautifulSoup(response.content, 'html.parser')
     #print(soup.prettify())
 
-
-
-
-
-
-    # Pull table from HTML - why is this not working?
+# Pull table from HTML - why is this not working?
     table = soup.find('table', {'style': 'border-color:Black;border-width:1px;border-style:Solid;width:100%;border-collapse:collapse;'})
-
-
-
 
 # Create list to store table rows
     table_rows = []
