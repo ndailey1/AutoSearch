@@ -50,7 +50,7 @@ if response.status_code == 200:
     #Find specific values in dataframe
     value = df.loc['Release', 'Book/Page'] #access cell by row label and column name
 
-    # Step 14: Print the dataframe
+    #Print the specific value
     print(value)
 
 else:
