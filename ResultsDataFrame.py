@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import webbrowser
 
 # Make a GET request
 url = "https://connecticut-townclerks-records.com/LandRecords/protected/SrchBookPage.aspx"
@@ -14,8 +15,16 @@ if response.status_code == 200:
     soup = BeautifulSoup(response.content, 'html.parser')
     #print(soup.prettify())
 
-# Pull table from HTML - why is this not working?
+
+
+
+
+
+    # Pull table from HTML - why is this not working?
     table = soup.find('table', {'style': 'border-color:Black;border-width:1px;border-style:Solid;width:100%;border-collapse:collapse;'})
+
+
+
 
 # Create list to store table rows
     table_rows = []
@@ -41,7 +50,6 @@ if response.status_code == 200:
 
     # Make pandas dataframe from the list of rows
     df = pd.DataFrame(table_rows[1:], columns=table_rows[0])
-    #print(df)
 
 #FINDING SPECIFIC DATA IN THE DATAFRAME
 
@@ -51,8 +59,19 @@ if response.status_code == 200:
     #Find specific values in dataframe
     value = df.loc['Release', 'Book/Page'] #access cell by row label and column name
 
-    #Print the specific value
-    print(value)
+    #Define specific value needed
+    value_series = pd.Series(value, index=['Release'])
+
+    #Save specific values to excel file
+    value_series.to_excel('testsheet.xlsx', index=False)
+
+
+    #Open excel sheet - THIS IS NOT WORKING
+    try:
+        webbrowser.open('testsheet.xlsx')
+    except Exception as e:
+        print("Error opening the file:", e)
+
 
 else:
     print("FAILED")
