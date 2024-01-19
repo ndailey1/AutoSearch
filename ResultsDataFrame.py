@@ -41,6 +41,7 @@ if response.status_code == 200:
 
     # Make pandas dataframe from the list of rows
     df = pd.DataFrame(table_rows[1:], columns=table_rows[0])
+    #print(df)
 
 #FINDING SPECIFIC DATA IN THE DATAFRAME
 
