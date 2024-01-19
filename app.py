@@ -6,6 +6,7 @@ from selenium import webdriver
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import socket
 
 # SET UP
 
@@ -60,7 +61,7 @@ with open("NewBritainVolPage.csv", "r") as csv_file:
         volume.send_keys(line[0])
 
         page = driver.find_element("xpath", '//*[@id="ctl00_cphMain_txtPageNumber"]')
-        page.send_keys(line[1])
+        page.send_keys(line[2])
 
         time.sleep(1)
 
@@ -68,15 +69,25 @@ with open("NewBritainVolPage.csv", "r") as csv_file:
         search_button.click()
 
         time.sleep(5)
-        
-# FIND RELEASE, RECORD VOL./PG., ADD IMAGE TO CART
-    # Pull HTML of table
-        # Definine if there is a release (conditions: Kind="Release" and REF="line[0],line[1])
-            #IF YES:
-                # Pull volume and page of release back into CSV 
-                    # Click attached image
-                    # Click add to cart
-            
 
-#How to add "if" and "then" commands?
-#How to choose data from a table then perform a certain action based on conditions?
+#Need to add conditions defining the correct release to:
+    #Extract the correct Vol/Page into excel or csv
+    #Click on the correct image link
+        #Can the tr/td variables in the xpath change conditionally?
+
+#Trying to make conditions - only if the page has the word "release". Need to figure out how to reference the new URL for the current page.
+
+# Get the script's current URL
+
+
+# Clicking into the image of the release
+        release_image = driver.find_element("xpath", '//*[@id="ctl00_cphMain_lrrgResults_cgvResults"]/tbody/tr[2]/td[14]/a')
+        release_image.click()
+
+        time.sleep(5)
+
+# Adding document to cart
+        add_to_cart = driver.find_element("xpath", '//*[@id="ctl00_cphMain_lbAddDocToCart"]')
+        add_to_cart.click()
+
+        time.sleep(5)
