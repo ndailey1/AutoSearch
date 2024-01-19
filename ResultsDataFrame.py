@@ -12,6 +12,7 @@ if response.status_code == 200:
 
     # HTML scrape
     soup = BeautifulSoup(response.content, 'html.parser')
+    #print(soup.prettify())
 
 
 
