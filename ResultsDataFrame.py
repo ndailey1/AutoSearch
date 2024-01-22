@@ -21,7 +21,7 @@ if response.status_code == 200:
 
 
     # Pull table from HTML - why is this not working?
-    table = soup.find('table', {'style': 'border-color:Black;border-width:1px;border-style:Solid;width:100%;border-collapse:collapse;'})
+    table = soup.find('table', {'id': 'ctl00_cphMain_lrrgResults_cgvResults'})
 
 
 
