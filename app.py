@@ -75,9 +75,11 @@ with open("NewBritainVolPage.csv", "r") as csv_file:
     #Click on the correct image link
         #Can the tr/td variables in the xpath change conditionally?
 
-#Trying to make conditions - only if the page has the word "release". Need to figure out how to reference the new URL for the current page.
+        #pandas df
 
-# Get the script's current URL
+        #Trying to make conditions - only if the page has the word "release". Need to figure out how to reference the new URL for the current page.
+
+# Get the script's current URL***?
 
 
 # Clicking into the image of the release
