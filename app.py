@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import socket
 
-# SET UP
+# SET UP - using a CSV file created from excel sheet. Ideally would like to have the data pulled/returned directly to/from the excel sheet.
 
 with open("NewBritainVolPage.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
