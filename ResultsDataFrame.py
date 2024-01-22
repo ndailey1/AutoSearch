@@ -1,3 +1,6 @@
+#Pandas dataframe created from extracting data table through website html using beautifulsoup. 
+#Using this to define criteria for capturing the right data.
+
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
