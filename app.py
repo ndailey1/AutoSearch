@@ -62,25 +62,6 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
         time.sleep(1)
 
-
-
-#DELETE
-
-        ACKNOWLEDGEE = driver.find_element("xpath", '//*[@id="Notification-ok"]')
-        ACKNOWLEDGEE.click()
-
-        time.sleep(1)
-
-#DELETE
-
-
-
-
-        search_b = driver.find_element("xpath", '//*[@id="lnkSearch"]')
-        search_b.click()
-
-        time.sleep(1)
-
  #Select a Book/Page search
         search_drop_down = driver.find_element("xpath", '//*[@id="btnSearchType"]')
         search_drop_down.click()
@@ -92,7 +73,7 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
         time.sleep(1)
 
-# Running the search with CSV data and bringing to results page
+# Running the search using the CSV data in Data.csv and bringing to results page
 
         volume = driver.find_element("xpath", '//*[@id="Book"]')
         volume.send_keys(line[0])
@@ -109,10 +90,8 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
 
 
-
-
-
-#IF MULTIPLE RESULTS, SELECT THE CORRECT MORTGAGE BY VOL/PG NUMBER
+# to be added:
+# IF MULTIPLE RESULTS, SELECT THE CORRECT MORTGAGE BY VOL/PG NUMBER
 #IF NO RELATED DOCS, PRINT "NO MORTGAGE FOUND" ON CSV
 #IF RELATED DOCS BUT NO RELEASE, PRINT "NO RELEASE FOUND" ON CSV
 
@@ -121,15 +100,15 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
 
 
-#Click into related documents of mortgage - this is only if there is 1 mortgage listed:
+#Click into related documents of mortgage - this is only if there is 1 mortgage listed**:
         related_documents = driver.find_element("xpath", '//*[@id="search-results-table"]/tbody/tr[1]/td[3]/a[3]')
         related_documents.click()
 
         time.sleep(1)
 
-#IF NO RELEASE, PRINT "NO RELEASE FOUND"
+#IF NO RELEASE, PRINT "NO RELEASE FOUND" - FEATURE TO BE ADDED
 
-# Checking if its a release and pulling VOL,PG,DATE:
+# Checking if its a release and pulling VOL,PG,DATE using CSS slector to find correct data and extract into pd df:
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
         for child_element in child_elements:
             date_filed_data = ''
