@@ -13,16 +13,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-#For CSV File that data is extracted to
+
+#SET UP - this will be the CSV file used to populate data into the search form, and the Pandas df that will extract the data to a new CSV.
+
 df = pd.DataFrame(columns=["Volume", "Page", "Date Filed"])
 
-
-#SET UP - this will be the CSV file used to populate data into the search.
-
-with open("WindsorLocks.csv", "r") as csv_file:
+with open("Data.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
-
-
 
 #WEB AUTOMATION
 
@@ -30,30 +27,18 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
     for line in csv_reader:
         driver = webdriver.Chrome()
-        driver.get('https://recordhub.cottsystems.com/WindsorLocksCT/Search/') #MAKE SURE TO CHANGE THIS LINK TO THE RIGHT TOWN
+        driver.get('https://recordhub.cottsystems.com/****TOWN****CT/Search/') #MAKE SURE TO CHANGE THIS LINK TO THE RIGHT TOWN
 
         time.sleep(1)
 
 
-
-#DELETE LATER
-        ACKNOWLEDGE = driver.find_element("xpath", '//*[@id="Notification-ok"]')
-        ACKNOWLEDGE.click()
-
-        time.sleep(1)
-
-#DELETE LATER
-
-
-
-
-    #INPUTTING LOGIN INFO - using "Sign-In As Guest" option for testing - below code is to sign into a profile.
+    #INPUTTING LOGIN INFO - below code is to sign into a profile. The loop needs to login each time it runs which needs to be fixed.
 
         email = driver.find_element("xpath", '//*[@id="UserName"]')
-        email.send_keys('czapiga24@gmail.com')
+        email.send_keys('USERNAME')
 
         password = driver.find_element("xpath", '//*[@id="Password"]')
-        password.send_keys('Quas06248!')
+        password.send_keys('PASS!')
 
         time.sleep(1)
 
@@ -62,7 +47,7 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
         time.sleep(1)
 
- #Select a Book/Page search
+ #Select the Book/Page search
         search_drop_down = driver.find_element("xpath", '//*[@id="btnSearchType"]')
         search_drop_down.click()
 
@@ -73,7 +58,7 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
         time.sleep(1)
 
-# Running the search using the CSV data in Data.csv and bringing to results page
+# Running the search using line in Data.csv and bringing to results page
 
         volume = driver.find_element("xpath", '//*[@id="Book"]')
         volume.send_keys(line[0])
@@ -91,9 +76,9 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
 
 # to be added:
-# IF MULTIPLE RESULTS, SELECT THE CORRECT MORTGAGE BY VOL/PG NUMBER
-#IF NO RELATED DOCS, PRINT "NO MORTGAGE FOUND" ON CSV
-#IF RELATED DOCS BUT NO RELEASE, PRINT "NO RELEASE FOUND" ON CSV
+# IF MULTIPLE RESULTS, SELECT THE CORRECT MORTGAGE BY ITS VOL/PG NUMBER
+# IF NO RELATED DOCS, PRINT "NO MORTGAGE FOUND" ON CSV INSTEAD OF ERROR
+# IF RELATED DOCS BUT NO RELEASE, PRINT "NO RELEASE FOUND" ON CSV INSTEAD OF ERROR
 
 
 
@@ -106,9 +91,8 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
         time.sleep(1)
 
-#IF NO RELEASE, PRINT "NO RELEASE FOUND" - FEATURE TO BE ADDED
 
-# Checking if its a release and pulling VOL,PG,DATE using CSS slector to find correct data and extract into pd df:
+# Check if the related document is a release and pull VOL,PG,DATE using CSS slector then extract into pd df:
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
         for child_element in child_elements:
             date_filed_data = ''
@@ -131,7 +115,8 @@ with open("WindsorLocks.csv", "r") as csv_file:
 
               time.sleep(1)
 
-#Click into release document
+#Click into release document image
+        
         documents = driver.find_element(By.CSS_SELECTOR, 'td[class="odd childContainerRow"]').find_elements(By.TAG_NAME, 'tr')
         for document in documents:
             if 'REL' in document.text:
