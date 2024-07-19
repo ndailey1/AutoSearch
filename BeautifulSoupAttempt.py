@@ -1,3 +1,5 @@
+#DID NOT USE - THIS WAS AN ATTEMPT TO USE PANDAS WITH BEAUTIFUL SOUP
+
 #Pandas dataframe created from extracting data table through website html using beautifulsoup. 
 #Using this to define criteria for capturing the right data.
 
