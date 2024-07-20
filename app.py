@@ -14,7 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-#SET UP - this will create the Pandas df and use CSV reader to populate search forms using data from Data.csv 
+#SET UP - this will create the Pandas df and use CSV reader to populate search forms using data from Data.csv file
 
 df = pd.DataFrame(columns=["Volume", "Page", "Date Filed"])
 
@@ -24,12 +24,12 @@ with open("Data.csv", "r") as csv_file:
     
 
     
-#WEB AUTOMATION - create a For loop that uses Data.csv data to search for mortgage documents, then finds the corresponding release document and records the release data (VOL, PG, DATE) into a CSV. Then, the script adds the release document to a cart to be printed.
+#WEB AUTOMATION - create a For loop that uses Data.csv to search for mortgage documents, then find the corresponding release document and record the data (VOL, PG, DATE) into a CSV. Then, the add the image of the release document to a cart to be printed.
 
 
     
 
-# FOR LOOP REPEATS USING EACH ROW IN THE Data.csv FILE
+# FOR LOOP REPEATS GOING TO NEXT ROW IN THE Data.csv FILE EACH TIME
 
     for line in csv_reader:
 
@@ -120,9 +120,11 @@ with open("Data.csv", "r") as csv_file:
 
 
         
-# Find elements on the page that have a class of "childData" using a CSS selector, then store in child_elements variable.
+# Find and define elements on the page that have a class of "childData" using a CSS selector and store in child_elements variable
         
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
+
+        
         for child_element in child_elements:
             date_filed_data = ''
             volume_data = ''
