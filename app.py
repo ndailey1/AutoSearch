@@ -14,14 +14,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-#SET UP - this will be the CSV file used to populate data into the search form and the Pandas df that will extract the data to a new CSV with labeled columns.
+#SET UP - this will define the Pandas df that will input the data to a new CSV with labeled columns, and also the CSV reader to populate search forms using data from CSV
 
 df = pd.DataFrame(columns=["Volume", "Page", "Date Filed"])
 
 with open("Data.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
 
-#WEB AUTOMATION - create a For loop that uses the CSV data to search for mortgage documents, then find the release that corresponds to the mortgage. The release data (VOL, PG, DATE), and the image of the document, is what the script ultimately should extract.
+#WEB AUTOMATION - create a For loop that uses the CSV data to search for mortgage documents, then find the release document that corresponds to the mortgage. The release data (VOL, PG, DATE), and the image of the document is what the script ultimately should extract.
 
 # USE CHROME WEBDRIVER TO ACCESS WEBPAGE OF SPECIFIC TOWN AND CORRESPONDING CSV
 
@@ -47,7 +47,18 @@ with open("Data.csv", "r") as csv_file:
 
         time.sleep(1)
 
- #Select the Book/Page search
+
+        
+        
+        
+# ThERE HAS BEEN PROBLEMS WITH THE WEBPAGE HERE
+
+
+
+
+        
+
+ #Select the Book/Page search on webpage
         search_drop_down = driver.find_element("xpath", '//*[@id="btnSearchType"]')
         search_drop_down.click()
 
@@ -58,7 +69,7 @@ with open("Data.csv", "r") as csv_file:
 
         time.sleep(1)
 
-# Searching for mortgage using first line in Data.csv, then bringing to results page
+# Populating data into the search bars using first line in Data.csv, then bringing to results page
 
         volume = driver.find_element("xpath", '//*[@id="Book"]')
         volume.send_keys(line[0])
@@ -75,7 +86,7 @@ with open("Data.csv", "r") as csv_file:
 
 
 
-# to be added:
+# to be added********:
 # IF MULTIPLE RESULTS, SELECT THE CORRECT MORTGAGE BY ITS VOL/PG NUMBER
 # IF NO RELATED DOCS, PRINT "NO MORTGAGE FOUND" ON CSV INSTEAD OF ERROR
 # IF RELATED DOCS BUT NO RELEASE, PRINT "NO RELEASE FOUND" ON CSV INSTEAD OF ERROR
@@ -85,32 +96,43 @@ with open("Data.csv", "r") as csv_file:
 
 
 
-#Click into related documents of mortgage - this is only if there is 1 mortgage listed**:
+#Click into related documents of mortgage - this is only if there is 1 mortgage listed****:
         related_documents = driver.find_element("xpath", '//*[@id="search-results-table"]/tbody/tr[1]/td[3]/a[3]')
         related_documents.click()
 
         time.sleep(1)
 
 
-# Check if the related document is a release and pull VOL,PG,DATE using CSS slector, then extract into pd df:
+# TO GET SCRAPE THE RELEASE DATA:
+        # Find elements on the page that have a class of "childData" using a CSS selector, then store in child_elements variable.
+        
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
         for child_element in child_elements:
             date_filed_data = ''
             volume_data = ''
             page_data = ''
 
+# ASSURE THAT THE DOCUMENT IS THE RELEASE (REL) FOR THE MORTGAGE, THEN DEFINE THE TEXT TO BE EXTRACTED AFTER "FILED", "VOLUME" AND "PAGE"
             if 'REL' in child_element.text:
               date_filed_data = child_element.text.split('Filed:')[1].split(' ')[1]
               volume_data = child_element.text.split('Volume:')[1].split(' ')[1]
               page_data = child_element.text.split('Page:')[1].split(' ')[1]
-
+                
+# DEFINE DATA THAT'S EXTRACTED TO DATAFRAME 
               data = {
                   "Date Filed": date_filed_data,
                   "Volume": volume_data,
                   "Page": page_data,
               }
+
+#ADD ROW IN DF
               df.loc[len(df)] = data
+
+# MAKE SURE COLUMNS ARE IN CORRECT ORDER TO EASILY BE COPIED TO EXCEL
               df = df[['Date Filed', 'Volume', 'Page']]
+
+# INPUT DF TO NEW CSV FILE: ReleaseData.csv
+                
               df.to_csv('ReleaseData.csv', index=False)
 
               time.sleep(1)
