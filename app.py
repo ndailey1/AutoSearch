@@ -14,18 +14,27 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-#SET UP - this will define the Pandas df that will input the data to a new CSV with labeled columns, and also the CSV reader to populate search forms using data from CSV
+#SET UP - this will create the Pandas df and use CSV reader to populate search forms using data from Data.csv 
 
 df = pd.DataFrame(columns=["Volume", "Page", "Date Filed"])
 
 with open("Data.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
 
-#WEB AUTOMATION - create a For loop that uses the CSV data to search for mortgage documents, then find the release document that corresponds to the mortgage. The release data (VOL, PG, DATE), and the image of the document is what the script ultimately should extract.
+    
 
-# USE CHROME WEBDRIVER TO ACCESS WEBPAGE OF SPECIFIC TOWN AND CORRESPONDING CSV
+    
+#WEB AUTOMATION - create a For loop that uses Data.csv data to search for mortgage documents, then finds the corresponding release document and records the release data (VOL, PG, DATE) into a CSV. Then, the script adds the release document to a cart to be printed.
+
+
+    
+
+# FOR LOOP REPEATS USING EACH ROW IN THE Data.csv FILE
 
     for line in csv_reader:
+
+
+#ACCESS CHROME WEBDRIVER AND THE SPECIFIC TOWN BEING SEARCHED
         driver = webdriver.Chrome()
         driver.get('https://recordhub.cottsystems.com/****TOWN****CT/Search/') #*****MAKE SURE TO CHANGE THIS LINK TO THE RIGHT TOWN
 
@@ -58,7 +67,7 @@ with open("Data.csv", "r") as csv_file:
 
         
 
- #Select the Book/Page search on webpage
+ #Select the "Book/Page" search on the webpage
         search_drop_down = driver.find_element("xpath", '//*[@id="btnSearchType"]')
         search_drop_down.click()
 
@@ -69,7 +78,7 @@ with open("Data.csv", "r") as csv_file:
 
         time.sleep(1)
 
-# Populating data into the search bars using first line in Data.csv, then bringing to results page
+# Populate data into the search bars using line in Data.csv
 
         volume = driver.find_element("xpath", '//*[@id="Book"]')
         volume.send_keys(line[0])
@@ -79,6 +88,8 @@ with open("Data.csv", "r") as csv_file:
 
         time.sleep(1)
 
+#Go to results page
+        
         search_button = driver.find_element("xpath", '//*[@id="search-btn"]')
         search_button.click()
 
@@ -93,9 +104,6 @@ with open("Data.csv", "r") as csv_file:
 
 
 
-
-
-
 #Click into related documents of mortgage - this is only if there is 1 mortgage listed****:
         related_documents = driver.find_element("xpath", '//*[@id="search-results-table"]/tbody/tr[1]/td[3]/a[3]')
         related_documents.click()
@@ -103,8 +111,16 @@ with open("Data.csv", "r") as csv_file:
         time.sleep(1)
 
 
-# TO GET SCRAPE THE RELEASE DATA:
-        # Find elements on the page that have a class of "childData" using a CSS selector, then store in child_elements variable.
+
+        
+
+        
+# TO SCRAPE THE RELEASE DATA:
+
+
+
+        
+# Find elements on the page that have a class of "childData" using a CSS selector, then store in child_elements variable.
         
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
         for child_element in child_elements:
@@ -112,13 +128,13 @@ with open("Data.csv", "r") as csv_file:
             volume_data = ''
             page_data = ''
 
-# ASSURE THAT THE DOCUMENT IS THE RELEASE (REL) FOR THE MORTGAGE, THEN DEFINE THE TEXT TO BE EXTRACTED AFTER "FILED", "VOLUME" AND "PAGE"
+# ASSURE THAT THE DOCUMENT IS THE RELEASE FOR THE MORTGAGE BY FINDING 'REL' ELEMENT, THEN DEFINE THE TEXT THAT SHOULD BE EXTRACTED AFTER THE WORDS "FILED", "VOLUME" AND "PAGE"
             if 'REL' in child_element.text:
               date_filed_data = child_element.text.split('Filed:')[1].split(' ')[1]
               volume_data = child_element.text.split('Volume:')[1].split(' ')[1]
               page_data = child_element.text.split('Page:')[1].split(' ')[1]
                 
-# DEFINE DATA THAT'S EXTRACTED TO DATAFRAME 
+# Define data that is extracted ti dataframe
               data = {
                   "Date Filed": date_filed_data,
                   "Volume": volume_data,
@@ -137,7 +153,16 @@ with open("Data.csv", "r") as csv_file:
 
               time.sleep(1)
 
-#Click into release document image
+
+
+
+#AFTER DATE, VOLUME, AND PAGE ARE RECORDED, CONTINUE WITH ADDING DOC TO CART TO PRINT
+
+
+
+
+
+#Click into correct release document's image
         
         documents = driver.find_element(By.CSS_SELECTOR, 'td[class="odd childContainerRow"]').find_elements(By.TAG_NAME, 'tr')
         for document in documents:
@@ -145,8 +170,6 @@ with open("Data.csv", "r") as csv_file:
                 document.find_element(By.CSS_SELECTOR, 'a[class="btn btn-srchtbl"]').click()
 
         time.sleep(3)
-
-#AFTER DATE, VOLUME, AND PAGE ARE RECORDED, CONTINUE WITH ADDING DOC TO CART
 
 #Click print
         print_click = driver.find_element("xpath", '//*[@id="toolbar"]/div[1]/print-toolbar/div/a')
