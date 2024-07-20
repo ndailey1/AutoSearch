@@ -14,25 +14,25 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-#SET UP - this will be the CSV file used to populate data into the search form, and the Pandas df that will extract the data to a new CSV.
+#SET UP - this will be the CSV file used to populate data into the search form and the Pandas df that will extract the data to a new CSV with labeled columns.
 
 df = pd.DataFrame(columns=["Volume", "Page", "Date Filed"])
 
 with open("Data.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
 
-#WEB AUTOMATION
+#WEB AUTOMATION - create a For loop that uses the CSV data to search for mortgage documents, then find the release that corresponds to the mortgage. The release data (VOL, PG, DATE), and the image of the document, is what the script ultimately should extract.
 
-#LOGIN PAGE
+# USE CHROME WEBDRIVER TO ACCESS WEBPAGE OF SPECIFIC TOWN AND CORRESPONDING CSV
 
     for line in csv_reader:
         driver = webdriver.Chrome()
-        driver.get('https://recordhub.cottsystems.com/****TOWN****CT/Search/') #MAKE SURE TO CHANGE THIS LINK TO THE RIGHT TOWN
+        driver.get('https://recordhub.cottsystems.com/****TOWN****CT/Search/') #*****MAKE SURE TO CHANGE THIS LINK TO THE RIGHT TOWN
 
         time.sleep(1)
 
 
-    #INPUTTING LOGIN INFO - below code is to sign into a profile. The loop needs to login each time it runs which needs to be fixed.
+    #INPUTTING LOGIN INFO - below code is to sign into a profile. The loop needs to login each time it runs, which needs to be fixed.
 
         email = driver.find_element("xpath", '//*[@id="UserName"]')
         email.send_keys('USERNAME')
@@ -58,7 +58,7 @@ with open("Data.csv", "r") as csv_file:
 
         time.sleep(1)
 
-# Running the search using line in Data.csv and bringing to results page
+# Searching for mortgage using first line in Data.csv, then bringing to results page
 
         volume = driver.find_element("xpath", '//*[@id="Book"]')
         volume.send_keys(line[0])
@@ -92,7 +92,7 @@ with open("Data.csv", "r") as csv_file:
         time.sleep(1)
 
 
-# Check if the related document is a release and pull VOL,PG,DATE using CSS slector then extract into pd df:
+# Check if the related document is a release and pull VOL,PG,DATE using CSS slector, then extract into pd df:
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
         for child_element in child_elements:
             date_filed_data = ''
