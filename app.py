@@ -123,7 +123,8 @@ with open("Data.csv", "r") as csv_file:
 # Find and define elements on the page that have a class of "childData" using a CSS selector and store in child_elements variable
         
         child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
-
+        
+#Define elements that are extracted
         
         for child_element in child_elements:
             date_filed_data = ''
