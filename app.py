@@ -131,20 +131,20 @@ with open("Data.csv", "r") as csv_file:
             volume_data = ''
             page_data = ''
 
-# ASSURE THAT THE DOCUMENT IS THE RELEASE FOR THE MORTGAGE BY FINDING 'REL' ELEMENT, THEN DEFINE THE TEXT THAT SHOULD BE EXTRACTED AFTER THE WORDS "FILED", "VOLUME" AND "PAGE"
+# ASSURE THAT THE DOCUMENT IS THE RELEASE FOR THE MORTGAGE BY FINDING 'REL' STRING, THEN DEFINE THE TEXT THAT SHOULD BE EXTRACTED AFTER THE WORDS "FILED", "VOLUME" AND "PAGE"
             if 'REL' in child_element.text:
               date_filed_data = child_element.text.split('Filed:')[1].split(' ')[1]
               volume_data = child_element.text.split('Volume:')[1].split(' ')[1]
               page_data = child_element.text.split('Page:')[1].split(' ')[1]
                 
-# Define data that is extracted ti dataframe
+# Define data on dataframe
               data = {
                   "Date Filed": date_filed_data,
                   "Volume": volume_data,
                   "Page": page_data,
               }
 
-#ADD ROW IN DF
+#ADD ROW 
               df.loc[len(df)] = data
 
 # MAKE SURE COLUMNS ARE IN CORRECT ORDER TO EASILY BE COPIED TO EXCEL
