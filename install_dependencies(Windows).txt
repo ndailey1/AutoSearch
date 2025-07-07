@@ -1,0 +1,90 @@
+#Requires -RunAsAdministrator
+
+Write-Host "Starting installation of dependencies for RH.py..."
+
+# Step 1: Check if Python 3 is installed
+$python = Get-Command python3 -ErrorAction SilentlyContinue
+if (-not $python) {
+    Write-Host "Python 3 not found. Installing Python 3..."
+    try {
+        winget install -e --id Python.Python.3.10 --silent
+        # Refresh environment variables to include Python
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    } catch {
+        Write-Host "Failed to install Python. Please install Python 3 manually from https://www.python.org/downloads/"
+        exit 1
+    }
+} else {
+    Write-Host "Python 3 is already installed."
+}
+
+# Step 2: Ensure pip is installed
+$pip = Get-Command pip3 -ErrorAction SilentlyContinue
+if (-not $pip) {
+    Write-Host "pip not found. Installing pip..."
+    try {
+        $pipInstaller = "$env:TEMP\get-pip.py"
+        Invoke-WebRequest -Uri https://bootstrap.pypa.io/get-pip.py -OutFile $pipInstaller
+        python3 $pipInstaller
+        Remove-Item $pipInstaller
+    } catch {
+        Write-Host "Failed to install pip. Please install pip manually."
+        exit 1
+    }
+} else {
+    Write-Host "pip is already installed."
+}
+
+# Step 3: Install Python packages
+Write-Host "Installing Python packages (pandas, selenium)..."
+pip3 install pandas selenium
+
+# Step 4: Check if Google Chrome is installed
+$chrome = Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe" -ErrorAction SilentlyContinue
+if (-not $chrome) {
+    Write-Host "Google Chrome not found. Installing Google Chrome..."
+    try {
+        winget install -e --id Google.Chrome --silent
+    } catch {
+        Write-Host "Failed to install Google Chrome. Please install it manually from https://www.google.com/chrome/"
+        exit 1
+    }
+} else {
+    Write-Host "Google Chrome is already installed."
+}
+
+# Step 5: Install ChromeDriver
+Write-Host "Installing ChromeDriver..."
+# Get the installed Chrome version
+$chromePath = (Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe").'(Default)'
+$chromeVersion = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($chromePath).FileVersion
+$chromeMajorVersion = $chromeVersion.Split('.')[0]
+
+# Download the matching ChromeDriver version
+$chromedriverUrl = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$chromeMajorVersion"
+try {
+    $chromedriverVersion = (Invoke-WebRequest -Uri $chromedriverUrl -UseBasicParsing).Content
+} catch {
+    Write-Host "Failed to find ChromeDriver version for Chrome $chromeMajorVersion. Trying latest version..."
+    $chromedriverVersion = (Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/LATEST_RELEASE" -UseBasicParsing).Content
+}
+
+# Download and install ChromeDriver
+$chromedriverZip = "$env:TEMP\chromedriver_win32.zip"
+Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/$chromedriverVersion/chromedriver_win32.zip" -OutFile $chromedriverZip
+Expand-Archive -Path $chromedriverZip -DestinationPath "$env:TEMP\chromedriver" -Force
+$chromedriverPath = "$env:ProgramFiles\chromedriver"
+New-Item -ItemType Directory -Path $chromedriverPath -Force
+Move-Item -Path "$env:TEMP\chromedriver\chromedriver.exe" -Destination "$chromedriverPath\chromedriver.exe" -Force
+Remove-Item -Path $chromedriverZip
+Remove-Item -Path "$env:TEMP\chromedriver" -Recurse -Force
+
+# Add ChromeDriver to PATH
+$envPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+if ($envPath -notlike "*$chromedriverPath*") {
+    [System.Environment]::SetEnvironmentVariable("Path", "$envPath;$chromedriverPath", "Machine")
+    Write-Host "Added ChromeDriver to system PATH."
+}
+
+Write-Host "All dependencies installed successfully!"
+Write-Host "You can now run the RH.py script."
