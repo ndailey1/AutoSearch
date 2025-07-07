@@ -47,20 +47,24 @@ with open("ExampleData.csv", "r") as csv_file:
 
         # Input Volume and Page from CSV into search fields
         volume = driver.find_element("xpath", '//*[@id="Book"]')
+        
         volume.send_keys(line[0])  # Volume from CSV column 0
         mortgage_volume = line[0]  # Store mortgage Volume
 
         page = driver.find_element("xpath", '//*[@id="Page"]')
+        
         page.send_keys(line[1])    # Page from CSV column 1
         mortgage_page = line[1]    # Store mortgage Page
 
         time.sleep(1)
         search_button = driver.find_element("xpath", '//*[@id="search-btn"]')
         search_button.click()
+        
         time.sleep(3)  # Wait for search results to load
 
         # Check for release documents and extract data
         release_found = False  # Flag to track if a release is found
+        
         try:
             # Click into related documents (assumes single mortgage result)
             related_documents = driver.find_element("xpath", '//*[@id="search-results-table"]/tbody/tr[1]/td[3]/a[3]')
@@ -71,7 +75,9 @@ with open("ExampleData.csv", "r") as csv_file:
             child_elements = driver.find_elements(By.CSS_SELECTOR, 'td[class="childData"]')
             for child_element in child_elements:
                 if 'REL' in child_element.text:  # Check if it's a release document
+                    
                     release_found = True
+                    
                     # Extract Date Filed, Volume, and Page from text
                     date_filed_data = child_element.text.split('Filed:')[1].split(' ')[1]
                     volume_data = child_element.text.split('Volume:')[1].split(' ')[1]
@@ -87,6 +93,7 @@ with open("ExampleData.csv", "r") as csv_file:
                     }
                     df.loc[len(df)] = data
                     df.to_csv('ReleaseData.csv', index=False)  # Save to CSV
+                    
                     time.sleep(1)
 
                     # Click into the release document
@@ -94,7 +101,7 @@ with open("ExampleData.csv", "r") as csv_file:
                     for document in documents:
                         if 'REL' in document.text:
                             document.find_element(By.CSS_SELECTOR, 'a[class="btn btn-srchtbl"]').click()
-                            time.sleep(3)  # Wait for document to load
+                            time.sleep(3)  
 
                     # Add document to cart for printing
                     print_click = driver.find_element("xpath", '//*[@id="toolbar"]/div[1]/print-toolbar/div/a')
